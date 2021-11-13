@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="内核中定时器的使用：
+
+内核定时器
+
+低精度时钟(ms级)
+
+
+​      高精度时钟(ns级)
+
+当系统 idle（闲置） 时，CPU 进入节电模式，停止时钟中断，直到有任务需要执行时再恢复时钟,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>十一月 13, 2021</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>内核中定时器的使用：</p>
+<ul>
+<li><p>内核定时器</p>
+</li>
+<li><p>低精度时钟(ms级)</p>
+</li>
+</ul>
+<p>​      高精度时钟(ns级)</p>
+<ul>
+<li><p>当系统 idle（闲置） 时，CPU 进入节电模式，停止时钟中断，直到有任务需要执行时再恢复时钟。</p>
+</li>
+<li><p>Linux2.4 开始，内核通过一种被称为时间轮的算法来保证 add_timer()、del_timer() 以及 expire 处理（tick 中断）操作的时间复杂度都为 O(1)</p>
+</li>
+<li><p>时间轮工作流程步骤：</p>
+<ul>
+<li>加入Timer：如果新 Timer 在时间点 6 到期，它就被加入 bucket[6] 的 timer 链表。定位 bucket[6] 是一个数组访问的过程，因此这个操作是 O(1) 的。(这里个人理解应该是加入比如是要6个时间点应该要在当前course上加6)</li>
+<li>删除Timer：类似的，删除 Timer 也是 O(1) 的。比如删除一个 6 秒钟后到期的 timer，直接定位到 bucket[6], 然后在链表中删除一个元素是 O(1) 的。（个人感觉这里是o(n)）</li>
+<li>处理Timer的逻辑在时钟中断程序中，每次时钟中断产生时，cursor 增加一格，然后中断处理代码检查 cursor 所指向的 bucket，假如该 bucket 非空，则触发该 bucket 指向的 Timer 链表中的所有 Timer。这个操作也是 O(1) 的。</li>
+</ul>
+</li>
+<li><p>Linux 内核采用的就是 Hierarchy 时间轮算法，Linux 内核中用 jiffies 表示时间而不是时分秒，因此 Linux 没有采用 Hour/Minutes/Second 来分层，而是将 32bit 的 jiffies 值分成了 5 个部分，用来索引五个不同的数组（Linux 术语叫做 Timer Vector，简称 TV），分别表示五个不同范围的未来 jiffies 值。</p>
+</li>
+<li><p>早期 Linux 考虑两种定时器：内核自身需要的 timer，也叫做动态定时器；其次是来自用户态的需要, 即 setitimer 定时器，也叫做间隔定时器。</p>
+<ul>
+<li><p>动态Timer</p>
+<ul>
+<li><p>动态 timer 由内核自身使用，其实也是其他 Timer 的实现基础。使用动态 Timer 的接口函数有三个</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_timer()</span><br><span class="line">del_timer()</span><br><span class="line">init_timer()</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p> expires 的值是32位的，因为内核定时器并不适用于长的未来时间点。</p>
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

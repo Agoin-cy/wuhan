@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="
+Centos安装时需要自己选定分区，自动分区方案如下：
+实际分区时/home空间可能不需要那么大，因此需要了解各个分区的意义
+
+必须存在的分区
+
+/ 分区 ：所有一级目录都位于该分区之下，同时还与,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>十一月 13, 2021</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <ul>
+<li><p>Centos安装时需要自己选定分区，自动分区方案如下：<img src="https://www.linuxidc.com/upload/2019_04/190421093473231.png" alt="img"></p>
+<p>实际分区时/home空间可能不需要那么大，因此需要了解各个分区的意义</p>
+<ul>
+<li><p>必须存在的分区</p>
+<ul>
+<li><p>/ 分区 ：所有一级目录都位于该分区之下，同时还与引导/还原/修复系统等动作有关，包含了一些修复系统的程序。文件系统层次标准(Filesystem Hierarchy Standard, FHS)建议根分区 / 在满足系统需求的情况下，应该越小越好，这样能够最大可能的避免因为硬盘故障而导致系统损坏。同时最好不要在 / 分区创建新的子目录和存放非必要文件，推荐大小50G~100G。</p>
+</li>
+<li><p>/boot/efi分区：当固件为uefi时，必须存在，推荐大小200M</p>
+</li>
+<li><p>/biosboot 分区：硬盘采用GPT分区，而固件为BIOS时，必须存在，推荐大小2M。 </p>
+<p><strong>Tips</strong>：/ 分区必须存在，/boot/efi和/biosboot在特定的情况下也必须存在。</p>
+</li>
+</ul>
+</li>
+<li><p>推荐存在的分区</p>
+<ul>
+<li>/boot分区： 包含引导系统所需的静态文件，例如Linux内核文件，还有引导菜单和一些开机所需的配置文件等等，推荐大小1G。</li>
+</ul>
+</li>
+<li><p>视情况而定的分区</p>
+<ul>
+<li>/var分区：一些变化的数据，像日志，缓存等，推荐还是单独划分出来。随着系统的使用该分区的使用率会越来越大，空间需求量还是比较大的建议单独划分出来，特别是一些高负载应用将产生大量日志，推荐大小100~200G。</li>
+<li>/tmp分区： 放置一些临时文件和程序运行中的临时文件，一些运行高负载的服务器建议划分出来，推荐大小100G。</li>
+<li>/home分区：主要看服务器的用途，像ftp默认把特定用户的文件放置到该用户的家目录中，则需要尽可能的将空间分配给该分区，不过通常这种时候，会有额外的数据盘，若不提供类似服务可以不划分该分区。</li>
+<li>swap 交换分区：本应该根据内存大小划分，但现在一般情况下服务器配置都较高，划分4~8G备用即可。</li>
+<li>其它像/usr和/opt一般不需要单独划分出来，通常服务器通常作为专用，不会安装很多软件，有时候可能需要划分一个 /date 存点数据。</li>
+<li><strong>Tips</strong>：建议不要把硬盘全部空间划分，留一部分备用，扩容（LVM）。挂载点、分区类型、文件系统使用系统推荐即可、软raid现在没必要使用了，卷组也没有必要修改，Label（相当于Windows下给分区取名系统、软件）、Name根据实际情况设定。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>推荐的分区方案</p>
+<p>标称500G的硬盘，实际空间应该是在450G左右。/biosboot和/boot/efi依据实际情况，如有必要存在使用推荐大小即可。</p>
+<p>/ 100G</p>
+<p>/boot 1G</p>
+<p>/var 100G</p>
+<p>swap 8G</p>
+<p>多数情况下这些分区都可以这么分，这样450G的硬盘就大概还剩下240G，我建议至少留50G不分配，留作以后扩展分区使用，这样硬盘就还有190G未分配的空间，这些空间需要根据服务器实际用途来决定。</p>
+<p><strong>运行高负载应用</strong></p>
+<p>**/**tmp 100G</p>
+<p>因为高负载的应用经常会产生大量的临时文件，所以 /tmp 建议单独分出来，高负载的服务器的日志量也很大，建议剩下的90G可以添加给 /var ，也就是/var (100G+90G)</p>
+<p><strong>测试、开发环境</strong></p>
+<p>/usr 100G</p>
+<p>测试、开发环境，需要安装比较多软件，所以建议单独划分一个 /usr 分区出来安装软件，剩下的90G自由决定。</p>
+<p><strong>多用户环境</strong></p>
+<p>/home 100G</p>
+<p>多用户环境的服务器，每个用户可能经常需要在自己的家目录存放一些东西，建议单独划分一个 /home 目录，剩下的90G自由决定。</p>
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

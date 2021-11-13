@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="
+步骤说明
+
+重新划分硬盘分区。为此，需要依次缩小现有的文件系统（file system）、逻辑卷（logical volume）、物理卷（physical volume）和分区（partition,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>十一月 13, 2021</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <ul>
+<li><p>步骤说明</p>
+<ol>
+<li>重新划分硬盘分区。为此，需要依次缩小现有的文件系统（file system）、逻辑卷（logical volume）、物理卷（physical volume）和分区（partition），实际只用了3步，因为文件系统和逻辑卷是同时缩小的；</li>
+<li>新建分区，在新分区上安装 CentOS。此时开机会自动 boot 到 CentOS，Ubuntu 回不去了；</li>
+<li>使用 live USB 为 Ubuntu 重新安装 grub 并修改参数，最终实现可以通过开机 grub 菜单选择进入 Ubuntu 或者 CentOS 系统。</li>
+</ol>
+</li>
+<li><p>步骤1 缩小文件系统和逻辑卷（FS 和 LV）</p>
+<p>使用 <code>lsblk</code> 命令可以清楚地看到硬盘的分区情况，并且也看到我的 Ubuntu 是建立在逻辑卷上的（<code>TYPE</code> 列为 <code>lvm</code>）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">doudou@doudou-Aspire-E1-471G:~$ sudo lsblk</span><br><span class="line">NAME                  MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT</span><br><span class="line">(...)</span><br><span class="line">sda                     8:0    0 465.8G  0 disk </span><br><span class="line">└─sda1                  8:1    0 465.8G  0 part </span><br><span class="line">  ├─ubuntu--vg-root   253:2    0 464.8G  0 lvm  /</span><br><span class="line">  └─ubuntu--vg-swap_1 253:3    0   976M  0 lvm  </span><br></pre></td></tr></table></figure>
+
+<p>使用 df 命令查看 Ubuntu 系统所占空间大小和剩余空间：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">doudou@doudou-Aspire-E1-471G:~$ df -h</span><br><span class="line">Filesystem                   Size  Used Avail Use% Mounted on</span><br><span class="line">(...)</span><br><span class="line">/dev/mapper/ubuntu--vg-root  465G  9.8G   455G  3% /</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 ubuntu–vg-root 逻辑卷实际只占了 9.8 G 空间。下面缩小 ubuntu–vg-root 逻辑卷，为安装 CentOS腾出空间。</p>
+<p>使用 lvreduce 命令缩小逻辑卷 ubuntu–vg-root 的大小，其中 –resizefs 标识是说，在缩小逻辑卷的同时也缩小文件系统，–size -350G 表示缩小 350 G。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">doudou@doudou-Aspire-E1-471G:~$ sudo lvreduce --resizefs --size -350G /dev/ubuntu-vg/root</span><br><span class="line">Do you want to unmount &quot;/&quot; ? [Y|n] n</span><br><span class="line">fsadm: Cannot proceed with mounted filesystem &quot;/&quot;.</span><br><span class="line">  /sbin/fsadm failed: 1</span><br><span class="line">  Filesystem resize failed.</span><br></pre></td></tr></table></figure>
+
+<p>shell 提示在文件系统挂载的情况下，是无法改变文件系统大小的（逻辑卷大小是可以改的），不过在系统运行时显然是不能卸载 / 的（虽然我还没试过在上面选 y…）。</p>
+<p>因此，这一步需要使用 live USB 进行，找一个 Ubuntu 的镜像写入 USB（如果是 mac，推荐 balenaEtcher 这个工具），然后使用 USB 引导系统，选择 “Try Ubuntu”，然后打开命令行，重复上面的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo lvreduce --resizefs --size -350G /dev/ubuntu-vg/root</span><br></pre></td></tr></table></figure>
+
+<p>这一次应该就能顺利完成了，检查一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo lvs</span><br><span class="line">  LV     VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert</span><br><span class="line">  root   centos-vg -wi-a----- 114.80g                                                    </span><br><span class="line">  swap   centos-vg -wi-a----- 976.00m      </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>LVM相关概念<ul>
+<li><a target="_blank" rel="noopener" href="https://www.thegeekdiary.com/redhat-centos-a-beginners-guide-to-lvm-logical-volume-manager/">https://www.thegeekdiary.com/redhat-centos-a-beginners-guide-to-lvm-logical-volume-manager/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.digitalocean.com/community/tutorials/an-introduction-to-lvm-concepts-terminology-and-operations">https://www.digitalocean.com/community/tutorials/an-introduction-to-lvm-concepts-terminology-and-operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>步骤2：缩小物理卷（PV）</p>
+<p>上一步只是缩小了逻辑卷的大小，如果使用 vgs 命令展示逻辑卷组信息，会发现逻辑卷组的大小还是没变：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo vgs</span><br><span class="line">  VG        #PV #LV #SN Attr   VSize    VFree </span><br><span class="line">  ubuntu-vg   1   2   0 wz--n- &lt;465.80g 350.24g</span><br></pre></td></tr></table></figure>
+
+<p>使用 pvs 展示物理卷信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo pvs</span><br><span class="line">  PV         VG        Fmt  Attr PSize    PFree </span><br><span class="line">  /dev/sda1  ubuntu-vg lvm2 a--  &lt;465.80g 350.24g</span><br></pre></td></tr></table></figure>
+
+<p>这个时候如果直接缩小分区，还是会造成数据损失（事实上我就是在这一步直接缩小分区了，后来连 CentOS 都装好了，但命令行只要涉及分区或者 LVM 的操作都在提示 Warning 信息，促使我发现了这个问题，缩小了物理卷之后就好了，并且我很侥幸地居然没有造成数据损失）。</p>
+<p>下面使用 pvresize 来缩小物理卷， –setphysicalvolumesize 128G 将物理卷大小设置为 128 G：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo pvresize --setphysicalvolumesize 128G /dev/sda1</span><br></pre></td></tr></table></figure>
+
+<p>但是这里会遇到 /dev/sda1: cannot resize to xxxxx extents as later ones are allocated. 错误。通过 pvs 的 –segments 标识可以直观地看到原因：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo pvs -v --segments /dev/sda1</span><br><span class="line">  PV         VG        Fmt  Attr PSize    PFree  Start SSize LV     Start Type   PE Ranges            </span><br><span class="line">  /dev/sda1  ubuntu-vg lvm2 a--  &lt;465.80g 350.24g    0  xxxx root       0 linear /dev/sda1:0-(xxxx-1)    </span><br><span class="line">  /dev/sda1  ubuntu-vg lvm2 a--  &lt;465.80g 350.24g xxxx  yyyy            0 free </span><br><span class="line">  /dev/sda1  ubuntu-vg lvm2 a--  &lt;465.80g 350.24g zzzz   244 swap_1     0 linear /dev/sda1:zzzz-jjjj</span><br></pre></td></tr></table></figure>
+
+<p>中间具体的数值我忘记了，用 xxxx、yyyy、zzzz 和 jjjj 替代。</p>
+<p>总之，问题在于刚才缩小 root 逻辑卷所空余出来的空间在 swap_1 逻辑卷所占空间之前，而缩小物理卷只能从后缩小，会发现后面的空间其实是被 swap_1 占着呢，所以报错了。</p>
+<p>可以用 pvmove 命令来移动 PE，解决这个问题，其中的 /dev/sda1:zzzz-jjjj 对应的就是 swap_1 的区间：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pvmove --alloc anywhere /dev/sda1:zzzz-jjjj</span><br></pre></td></tr></table></figure>
+
+<p>根据我找到的参考资料，这样做应该能够解决问题，但在我的情况下还是报错。在尝试了很久未果之后，无奈我只好索性删除并重新创建了 swap_1 逻辑卷，反正交换空间里也没有数据。重新创建的 swap_1 逻辑卷（名字不能变，/etc/fstab 靠这个名字挂载）就自动接在 root 逻辑卷之后了。</p>
+<p>（后来我第二次遇到了同样的问题，使用上面的 pvmove 命令就成功解决了。）</p>
+<p>这个问题解决之后，重新运行上面的 sudo pvresize –setphysicalvolumesize 128G /dev/sda1 命令，即可缩小物理卷。</p>
+<p>现在使用 vgs 命令可以看到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo vgs</span><br><span class="line">  VG        #PV #LV #SN Attr   VSize    VFree </span><br><span class="line">  ubuntu-vg   1   2   0 wz--n- &lt;128.00g 65.24g</span><br></pre></td></tr></table></figure></li>
+<li><p>步骤3：缩小分区Partition</p>
+<p>这一步就比较简单了，使用 Ubuntu live USB 里自带的 GParted 工具可以很直观地改变分区大小。</p>
+<p>在我的例子里，上面已经提到，我在分区前忘了缩小物理卷，所以这一步使用 GParted 分区会报错，而且我当时没有找到问题。于是我使用 fdisk 命令强行进行了缩小分区，成功是成功了，但也导致了后面装好 CentOS 之后的 Warning 提示。好在最后问题还是得到了解决。</p>
+</li>
+<li><p>步骤4：安装CentOS</p>
+<p>CentOS竟然要求 <code>/boot</code> 不能使用 LVM 分区，于是还得单独为 <code>/boot</code> 划分一个分区。最后的分区变成了这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo lsblk</span><br><span class="line">NAME                  MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT</span><br><span class="line">(...)</span><br><span class="line">sda                     8:0    0 465.8G  0 disk </span><br><span class="line">├─sda1                  8:1    0   128G  0 part </span><br><span class="line">│ ├─ubuntu--vg-root   253:2    0 114.8G  0 lvm  /</span><br><span class="line">│ └─ubuntu--vg-swap_1 253:3    0   976M  0 lvm  </span><br><span class="line">├─sda2                  8:2    0   300M  0 part </span><br><span class="line">└─sda3                  8:3    0 115.8G  0 part </span><br><span class="line">  ├─centos--vg-root   253:0    0 114.8G  0 lvm  </span><br><span class="line">  └─centos--vg-swap   253:1    0   976M  0 lvm  </span><br></pre></td></tr></table></figure></li>
+<li><p>步骤5：安装 grub 并设置启动菜单</p>
+<p>CentOS 是装好了，但现在开机就自动引导到了 CentOS，Ubuntu 连影都见不着了。</p>
+<p>下面还是需要借助 Ubuntu 的 live USB，首先挂载 Ubuntu 的文件系统：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo mount /dev/mapper/ubuntu--vg-root  /mnt/</span><br></pre></td></tr></table></figure>
+
+<p>上面这个命令将 Ubuntu 的文件系统挂载到了 /mnt，也就是说，现在的 /mnt/ 目录下就是之前在 Ubuntu 系统上的 /下的内容了。</p>
+<p>安装 grub：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo grub-install –-root-directory=/mnt/ /dev/sda</span><br></pre></td></tr></table></figure>
+
+<p>现在重启计算机，从硬盘引导。但在我的例子中，开机时还是没有出现 grub 菜单，直接跳到了 CentOS…</p>
+<p>别着急，下面还是借助 Ubuntu 的 live USB，按照上面的方法挂载 Ubuntu 的文件系统到 /mnt 下，然后修改 /etc/default/grub 文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu:~$ sudo vi /mnt/etc/default/grub</span><br></pre></td></tr></table></figure>
+
+<p>将下面两项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GRUB_TIMEOUT_STYLE=hidden</span><br><span class="line">GRUB_TIMEOUT=0</span><br></pre></td></tr></table></figure>
+
+<p>修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GRUB_TIMEOUT_STYLE=menu</span><br><span class="line">GRUB_TIMEOUT=10</span><br></pre></td></tr></table></figure>
+
+<p>再次重启计算机，可以在 grub 菜单上选择引导系统了，大功告成！</p>
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="
+概念普及
+
+INT：16位的整数分频比
+FRAC：12位的小数分频的分子
+MOD：12位小数模数
+
+
+①HSE 高速外部时钟信号
+当使用有源晶振时，时钟从OSC_IN 引脚进入，OSC_OUT 引,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>十一月 13, 2021</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <ul>
+<li><p>概念普及</p>
+<ul>
+<li>INT：16位的整数分频比</li>
+<li>FRAC：12位的小数分频的分子</li>
+<li>MOD：12位小数模数</li>
+</ul>
+</li>
+<li><h3 id="①HSE-高速外部时钟信号"><a href="#①HSE-高速外部时钟信号" class="headerlink" title="①HSE 高速外部时钟信号"></a>①HSE 高速外部时钟信号</h3><ul>
+<li>当使用<strong>有源晶振</strong>时，时钟从<code>OSC_IN</code> 引脚<strong>进入</strong>，<code>OSC_OUT</code> 引脚<strong>悬空</strong>；当选用<strong>无源晶振</strong>时，时钟从<code>OSC_IN</code> 和<code>OSC_OUT</code> <strong>进入</strong>，并且要配谐振电容。</li>
+<li>当<code>HSE</code> 故障时，高速的内部时钟信号<code>HSI</code>会作为<strong>备用</strong>的系统时钟，直到<code>HSE</code>恢复正常，<code>HSI=16M</code>。</li>
+</ul>
+<h3 id="②锁相环PLL"><a href="#②锁相环PLL" class="headerlink" title="②锁相环PLL"></a>②锁相环PLL</h3><ul>
+<li>HSE 或者HSI 经过PLL 时钟输入分频因子M（<code>2~63</code>）分频后，成为<code>VCO</code> 的时钟输入，<code>VCO</code> 的时钟必须在<strong>1~2M</strong> 之间，我们选择<code>HSE=25M</code>作为PLL 的时钟输入，<code>M</code> 设置为<strong>25</strong>，那么<code>VCO</code>输入时钟就等于<strong>1M</strong>。</li>
+<li><code>PLLCLK_OUTMAX = VCOCLK_OUTMAX / P_MIN = 432/2=216M</code>，即F429 最高可<strong>超频</strong>到<strong>216M</strong>。</li>
+<li>PLL 的时钟配置经过，稍微整理下可由如下公式表达：    <ul>
+<li><code>VCOCLK_IN = PLLCLK_IN / M = HSE / 25 = 1M</code></li>
+<li><code>VCOCLK_OUT = VCOCLK_IN * N = 1M * 360 = 360M</code></li>
+<li><code>PLLCLK_OUT=VCOCLK_OUT/P=360/2=180M</code></li>
+<li><code>USBCLK = VCOCLK_OUT/Q=360/7=51.7</code>。暂时这样配置，到真正使用USB 的时候会重新配置。</li>
+</ul>
+</li>
+</ul>
+<h3 id="③系统时钟SYSCLK"><a href="#③系统时钟SYSCLK" class="headerlink" title="③系统时钟SYSCLK"></a>③系统时钟SYSCLK</h3><p>系统时钟来源可以是：<code>HSI</code>、<code>PLLCLK</code>、<code>HSE</code>HSE，具体的由时钟配置寄存器<code>RCC_CFGR</code>的<code>SW</code>位配置。</p>
+<h3 id="④AHB-总线时钟HCLK"><a href="#④AHB-总线时钟HCLK" class="headerlink" title="④AHB 总线时钟HCLK"></a>④AHB 总线时钟HCLK</h3><ul>
+<li>系统时钟<code>SYSCLK</code>经过<code>AHB</code>预分频器分频之后得到时钟叫<code>APB</code>总线时钟，即<code>HCLK</code>。</li>
+<li><strong>片上大部分外设的时钟</strong>都是经过<code>HCLK</code>分频得到。</li>
+</ul>
+<h3 id="⑤APB2-总线时钟HCLK2"><a href="#⑤APB2-总线时钟HCLK2" class="headerlink" title="⑤APB2 总线时钟HCLK2"></a>⑤APB2 总线时钟HCLK2</h3><ul>
+<li><code>APB2</code> 总线时钟<code>PCLK2</code> 由<code>HCLK</code>经过高速<code>APB2</code> 预分频器得到。</li>
+<li><code>HCLK2</code>属于<strong>高速</strong>的总线时钟，<strong>片上高速的外设</strong>就挂载到这条总线上，比如<strong>全部</strong>的<code>GPIO</code>、<code>USART1</code>、<code>SPI1</code>等。</li>
+</ul>
+<h3 id="⑥APB1-总线时钟HCLK1"><a href="#⑥APB1-总线时钟HCLK1" class="headerlink" title="⑥APB1 总线时钟HCLK1"></a>⑥APB1 总线时钟HCLK1</h3><ul>
+<li><code>APB1</code>总线时钟<code>PCLK1</code> 由<code>HCLK</code>经过低速<code>APB1</code> 预分频器得到。</li>
+<li><code>HCLK1</code>属于<strong>低速</strong>的总线时钟，最高为<code>45M</code>，<strong>片上低速的外设</strong>就挂载到这条总线上，比如<code>USART2/3/4/5</code>、<code>SPI2/3</code>，<code>I2C1/2</code>等。</li>
+</ul>
+<h3 id="A、RTC-时钟"><a href="#A、RTC-时钟" class="headerlink" title="A、RTC 时钟"></a>A、RTC 时钟</h3><ul>
+<li><code>RTCCLK</code> 时钟源可以是 <code>HSE 1 MHz</code>、 <code>LSE</code> 或者 <code>LSI</code>时钟。</li>
+<li>通常的做法是由<code>LSE</code> 给<code>RTC</code> 提供时钟，大小为<code>32.768KHZ</code>。</li>
+<li><code>LSE</code>由外接的晶体谐振器产生，所配的谐振电容<strong>精度要求高</strong>，不然很容易不起震。</li>
+</ul>
+<h3 id="B、独立看门狗时钟"><a href="#B、独立看门狗时钟" class="headerlink" title="B、独立看门狗时钟"></a>B、独立看门狗时钟</h3><p>由内部的低速时钟<code>LSI</code>提供，大小为<code>32KHZ</code>。</p>
+<h3 id="C、I2S-时钟"><a href="#C、I2S-时钟" class="headerlink" title="C、I2S 时钟"></a>C、I2S 时钟</h3><p><code>I2S</code>时钟可由<strong>外部</strong>的时钟引脚<code>I2S_CKIN</code>输入，也可由<strong>专用</strong>的<code>PLLI2SCLK</code>提供。</p>
+<h3 id="D、PHY以太网时钟"><a href="#D、PHY以太网时钟" class="headerlink" title="D、PHY以太网时钟"></a>D、PHY以太网时钟</h3><ul>
+<li>F429要想实现以太网功能，除了有本身<strong>内置</strong>的<code>MAC</code>之外，还需要<strong>外接</strong>一个<code>PHY</code>芯片。</li>
+<li>当使用<code>RMII</code>接口时，<code>PHY</code>芯片只需输出<strong>一路时钟</strong>给<code>MCU</code>即可。</li>
+<li>如果是<code>MII</code>接口，<code>PHY</code>芯片则需要提供<strong>两路时钟</strong>给<code>MCU</code>。</li>
+</ul>
+<h3 id="E、USB-PHY-时钟"><a href="#E、USB-PHY-时钟" class="headerlink" title="E、USB PHY 时钟"></a>E、USB PHY 时钟</h3><ul>
+<li>F429 的<code>USB</code>没有集成<code>PHY</code>，必须<strong>外置</strong> <code>USB PHY</code> 芯片。</li>
+<li>当外接<code>USB PHY</code>芯片时，<code>PHY</code>芯片需要给<code>MCU</code>提供<strong>一个时钟</strong>。</li>
+</ul>
+<h3 id="F、MCO-时钟输出"><a href="#F、MCO-时钟输出" class="headerlink" title="F、MCO 时钟输出"></a>F、MCO 时钟输出</h3><p><code>MCO</code>是<code>microcontroller clock output</code>的缩写，是<strong>微控制器时钟输出引脚</strong>，主要作用是<strong>可以对外提供时钟</strong>，相当于一个<strong>有源晶振</strong>。 </p>
+<p><img src="https://ask.qcloudimg.com/http-save/yehe-1342517/mk6bsjwq18.png?imageView2/2/w/1620" alt="img"></p>
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="
+用到_trename进行文件重命名时，考虑可能会重命名失败，需要将出错时对应的错误吗记录到日志中。从MSDN查知，函数执行失败时会返回非0，通过errno宏可能获知对应的错误码。为了定位问题的方便,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>十一月 13, 2021</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <ul>
+<li><p>用到_trename进行文件重命名时，考虑可能会重命名失败，需要将出错时对应的错误吗记录到日志中。从MSDN查知，函数执行失败时会返回非0，通过errno宏可能获知对应的错误码。为了定位问题的方便，特将错误码对应的含义列出来。</p>
+</li>
+<li><p><strong>1、 errno错误码含义</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br></pre></td><td class="code"><pre><span class="line">&lt;asm-generic/errno-base.h&gt; </span><br><span class="line"> </span><br><span class="line">  #ifndef _ASM_GENERIC_ERRNO_BASE_H</span><br><span class="line"> </span><br><span class="line">  #define _ASM_GENERIC_ERRNO_BASE_H</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">  #define EPERM            1      /* Operation not permitted */</span><br><span class="line"> </span><br><span class="line">  #define ENOENT           2      /* No such file or directory */</span><br><span class="line"> </span><br><span class="line">  #define ESRCH            3      /* No such process */</span><br><span class="line"> </span><br><span class="line">  #define EINTR            4      /* Interrupted system call */</span><br><span class="line"> </span><br><span class="line">  #define EIO              5      /* I/O error */</span><br><span class="line"> </span><br><span class="line">  #define ENXIO            6      /* No such device or address */</span><br><span class="line"> </span><br><span class="line">  #define E2BIG            7      /* Argument list too long */</span><br><span class="line"> </span><br><span class="line">  #define ENOEXEC          8      /* Exec format error */</span><br><span class="line"> </span><br><span class="line">  #define EBADF            9      /* Bad file number */</span><br><span class="line"> </span><br><span class="line">  #define ECHILD          10      /* No child processes */</span><br><span class="line"> </span><br><span class="line">  #define EAGAIN          11      /* Try again */                                                                                  </span><br><span class="line"> </span><br><span class="line">  #define ENOMEM          12      /* Out of memory */</span><br><span class="line"> </span><br><span class="line">  #define EACCES          13      /* Permission denied */</span><br><span class="line"> </span><br><span class="line">  #define EFAULT          14      /* Bad address */</span><br><span class="line"> </span><br><span class="line">  #define ENOTBLK         15      /* Block device required */</span><br><span class="line"> </span><br><span class="line">  #define EBUSY           16      /* Device or resource busy */</span><br><span class="line"> </span><br><span class="line">  #define EEXIST          17      /* File exists */</span><br><span class="line"> </span><br><span class="line">  #define EXDEV           18      /* Cross-device link */</span><br><span class="line"> </span><br><span class="line">  #define ENODEV          19      /* No such device */</span><br><span class="line"> </span><br><span class="line">  #define ENOTDIR         20      /* Not a directory */</span><br><span class="line"> </span><br><span class="line">  #define EISDIR          21      /* Is a directory */</span><br><span class="line"> </span><br><span class="line">  #define EINVAL          22      /* Invalid argument */</span><br><span class="line"> </span><br><span class="line">  #define ENFILE          23      /* File table overflow */</span><br><span class="line"> </span><br><span class="line">  #define EMFILE          24      /* Too many open files */</span><br><span class="line"> </span><br><span class="line">  #define ENOTTY          25      /* Not a typewriter */</span><br><span class="line"> </span><br><span class="line">  #define ETXTBSY         26      /* Text file busy */</span><br><span class="line"> </span><br><span class="line">  #define EFBIG           27      /* File too large */</span><br><span class="line"> </span><br><span class="line">  #define ENOSPC          28      /* No space left on device */</span><br><span class="line"> #define ESPIPE          29      /* Illegal seek */</span><br><span class="line"> #define EROFS           30      /* Read-only file system */</span><br><span class="line"> #define EMLINK          31      /* Too many links */</span><br><span class="line">#define EPIPE           32      /* Broken pipe */</span><br><span class="line"> #define EDOM            33      /* Math argument out of domain of func */</span><br><span class="line"> #define ERANGE          34      /* Math result not representable */</span><br><span class="line"> </span><br><span class="line"> #endif    </span><br><span class="line"> </span><br><span class="line">&lt;linux/asm-generic/errno.h&gt; </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">#define EDEADLK         35      /* Resource deadlock would occur */</span><br><span class="line"> </span><br><span class="line"> #define ENAMETOOLONG    36      /* File name too long */</span><br><span class="line"> </span><br><span class="line"> #define ENOLCK          37      /* No record locks available */</span><br><span class="line"> </span><br><span class="line"> #define ENOSYS          38      /* Function not implemented */</span><br><span class="line"> </span><br><span class="line"> #define ENOTEMPTY       39      /* Directory not empty */</span><br><span class="line"> </span><br><span class="line"> #define ELOOP           40      /* Too many symbolic links encountered */</span><br><span class="line"> </span><br><span class="line"> #define EWOULDBLOCK     EAGAIN  /* Operation would block */</span><br><span class="line"> </span><br><span class="line"> #define ENOMSG          42      /* No message of desired type */</span><br><span class="line"> </span><br><span class="line"> #define EIDRM           43      /* Identifier removed */</span><br><span class="line"> </span><br><span class="line"> #define ECHRNG          44      /* Channel number out of range */</span><br><span class="line"> </span><br><span class="line"> #define EL2NSYNC        45      /* Level 2 not synchronized */</span><br><span class="line"> </span><br><span class="line"> #define EL3HLT          46      /* Level 3 halted */</span><br><span class="line"> </span><br><span class="line"> #define EL3RST          47      /* Level 3 reset */</span><br><span class="line"> </span><br><span class="line"> #define ELNRNG          48      /* Link number out of range */</span><br><span class="line"> </span><br><span class="line"> #define EUNATCH         49      /* Protocol driver not attached */</span><br><span class="line"> </span><br><span class="line"> #define ENOCSI          50      /* No CSI structure available */</span><br><span class="line"> </span><br><span class="line"> #define EL2HLT          51      /* Level 2 halted */</span><br><span class="line"> </span><br><span class="line"> #define EBADE           52      /* Invalid exchange */</span><br><span class="line"> </span><br><span class="line"> #define EBADR           53      /* Invalid request descriptor */</span><br><span class="line"> </span><br><span class="line"> #define EXFULL          54      /* Exchange full */</span><br><span class="line"> </span><br><span class="line"> #define ENOANO          55      /* No anode */</span><br><span class="line"> </span><br><span class="line"> #define EBADRQC         56      /* Invalid request code */</span><br><span class="line"> </span><br><span class="line"> #define EBADSLT         57      /* Invalid slot */</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> #define EDEADLOCK       EDEADLK</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">#define EBFONT          59      /* Bad font file format */</span><br><span class="line"> #define ENOSTR          60      /* Device not a stream */</span><br><span class="line"> #define ENODATA         61      /* No data available */</span><br><span class="line"> #define ETIME           62      /* Timer expired */</span><br><span class="line"> #define ENOSR           63      /* Out of streams resources */</span><br><span class="line"> #define ENONET          64      /* Machine is not on the network */</span><br><span class="line"> #define ENOPKG          65      /* Package not installed */</span><br><span class="line"> #define EREMOTE         66      /* Object is remote */</span><br><span class="line"> #define ENOLINK         67      /* Link has been severed */</span><br><span class="line"> #define EADV            68      /* Advertise error */</span><br><span class="line"> #define ESRMNT          69      /* Srmount error */</span><br><span class="line"> #define ECOMM           70      /* Communication error on send */</span><br><span class="line"> #define EPROTO          71      /* Protocol error */</span><br><span class="line"> #define EMULTIHOP       72      /* Multihop attempted */</span><br><span class="line"> #define EDOTDOT         73      /* RFS specific error */</span><br><span class="line"> #define EBADMSG         74      /* Not a data message */</span><br><span class="line"> #define EOVERFLOW       75      /* Value too large for defined data type */</span><br><span class="line"> #define ENOTUNIQ        76      /* Name not unique on network */</span><br><span class="line"> #define EBADFD          77      /* File descriptor in bad state */</span><br><span class="line"> #define EREMCHG         78      /* Remote address changed */</span><br><span class="line"> #define ELIBACC         79      /* Can not access a needed shared library */</span><br><span class="line"> #define ELIBBAD         80      /* Accessing a corrupted shared library */</span><br><span class="line"> #define ELIBSCN         81      /* .lib section in a.out corrupted */</span><br><span class="line"> #define ELIBMAX         82      /* Attempting to link in too many shared libraries */</span><br><span class="line"> #define ELIBEXEC        83      /* Cannot exec a shared library directly */</span><br><span class="line"> #define EILSEQ          84      /* Illegal byte sequence */</span><br><span class="line"> #define ERESTART        85      /* Interrupted system call should be restarted */</span><br><span class="line"> #define ESTRPIPE        86      /* Streams pipe error */</span><br><span class="line"> #define EUSERS          87      /* Too many users */</span><br><span class="line"> #define ENOTSOCK        88      /* Socket operation on non-socket */   </span><br><span class="line"> #define EDESTADDRREQ    89      /* Destination address required */</span><br><span class="line"> #define EMSGSIZE        90      /* Message too long */</span><br><span class="line"> #define EPROTOTYPE      91      /* Protocol wrong type for socket */</span><br><span class="line"> #define ENOPROTOOPT     92      /* Protocol not available */</span><br><span class="line"> #define EPROTONOSUPPORT 93      /* Protocol not supported */</span><br><span class="line"> #define ESOCKTNOSUPPORT 94      /* Socket type not supported */</span><br><span class="line"> #define EOPNOTSUPP      95      /* Operation not supported on transport endpoint */</span><br><span class="line"> #define EPFNOSUPPORT    96      /* Protocol family not supported */</span><br><span class="line"> #define EAFNOSUPPORT    97      /* Address family not supported by protocol */</span><br><span class="line"> #define EADDRINUSE      98      /* Address already in use */</span><br><span class="line"> #define EADDRNOTAVAIL   99      /* Cannot assign requested address */</span><br><span class="line"> #define ENETDOWN        100     /* Network is down */</span><br><span class="line"> #define ENETUNREACH     101     /* Network is unreachable */</span><br><span class="line"> #define ENETRESET       102     /* Network dropped connection because of reset */</span><br><span class="line"> #define ECONNABORTED    103     /* Software caused connection abort */</span><br><span class="line"> #define ECONNRESET      104     /* Connection reset by peer */</span><br><span class="line"> #define ENOBUFS         105     /* No buffer space available */</span><br><span class="line"> #define EISCONN         106     /* Transport endpoint is already connected */</span><br><span class="line"> #define ENOTCONN        107     /* Transport endpoint is not connected */</span><br><span class="line"> #define ESHUTDOWN       108     /* Cannot send after transport endpoint shutdown */</span><br><span class="line"> #define ETOOMANYREFS    109     /* Too many references: cannot splice */</span><br><span class="line"> #define ETIMEDOUT       110     /* Connection timed out */</span><br><span class="line"> #define ECONNREFUSED    111     /* Connection refused */</span><br><span class="line">#define EHOSTDOWN       112     /* Host is down */</span><br><span class="line"> #define EHOSTUNREACH    113     /* No route to host */</span><br><span class="line"> #define EALREADY        114     /* Operation already in progress */</span><br><span class="line"> #define EINPROGRESS     115     /* Operation now in progress */</span><br><span class="line"> #define ESTALE          116     /* Stale NFS file handle */</span><br><span class="line"> #define EUCLEAN         117     /* Structure needs cleaning */</span><br><span class="line"> #define ENOTNAM         118     /* Not a XENIX named type file */</span><br><span class="line"> #define ENAVAIL         119     /* No XENIX semaphores available */   </span><br><span class="line"> #define EISNAM          120     /* Is a named type file */</span><br><span class="line"> #define EREMOTEIO       121     /* Remote I/O error */</span><br><span class="line"> #define EDQUOT          122     /* Quota exceeded */</span><br><span class="line"> </span><br><span class="line"> #define ENOMEDIUM       123     /* No medium found */</span><br><span class="line"> #define EMEDIUMTYPE     124     /* Wrong medium type */</span><br><span class="line"> #define ECANCELED       125     /* Operation Canceled */</span><br><span class="line"> #define ENOKEY          126     /* Required key not available */</span><br><span class="line"> #define EKEYEXPIRED     127     /* Key has expired */</span><br><span class="line"> #define EKEYREVOKED     128     /* Key has been revoked */</span><br><span class="line"> #define EKEYREJECTED    129     /* Key was rejected by service */</span><br><span class="line"> </span><br><span class="line"> /* for robust mutexes */</span><br><span class="line"> #define EOWNERDEAD      130     /* Owner died */</span><br><span class="line"> #define ENOTRECOVERABLE 131     /* State not recoverable */</span><br><span class="line"> </span><br><span class="line"> #define ERFKILL         132     /* Operation not possible due to RF-kill */</span><br><span class="line"> </span><br><span class="line"> #endif    </span><br></pre></td></tr></table></figure></li>
+<li><p><strong>2、 errno的使用</strong></p>
+<ul>
+<li> errno其实就是一个宏，通过调用该宏即可得到对应的错误码，相关代码如下所示：</li>
+</ul>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int nRet = _trename( _T(&quot;E:\\test123.txt&quot;), _T(&quot;E:\\Test456.txt&quot;) );</span><br><span class="line">if ( nRet != 0 )</span><br><span class="line">&#123;</span><br><span class="line">        CString strErr;</span><br><span class="line">        strErr.Format( _T(&quot;fail to _trename, errno: %d&quot;), errno );</span><br><span class="line">        AfxMessageBox( strErr );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

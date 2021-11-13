@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="
+查看CPU的基本信息：
+
+cat /proc/cpuinfo
+processor 逻辑处理器的ID
+physical id 物理封装的处理器ID
+core id 每个核心的ID
+cpu cores,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>十一月 13, 2021</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <ul>
+<li><p>查看CPU的基本信息：</p>
+<ul>
+<li>cat /proc/cpuinfo<ul>
+<li>processor 逻辑处理器的ID</li>
+<li>physical id 物理封装的处理器ID</li>
+<li>core id 每个核心的ID</li>
+<li>cpu cores  位于相同物理封装的处理器内核数量</li>
+<li>siblings 位于相同物理封装的处理器中的逻辑处理器的数量</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>如何查看<strong>CPU逻辑个数</strong>。</p>
+<ul>
+<li>cat /proc/cpuinfo</li>
+<li><strong>cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c</strong></li>
+<li><strong>cat /proc/cpuinfo | grep physical | uniq -c</strong></li>
+<li><strong>cat /proc/cpuinfo |grep “processor”|wc -l</strong></li>
+<li><strong>cat /proc/cpuinfo |grep “physical id”</strong></li>
+</ul>
+</li>
+<li><p>如何查看每个CPU核心数</p>
+<ul>
+<li><strong>cat /proc/cpuinfo |grep “cores”</strong></li>
+</ul>
+</li>
+<li><p>查看CPU使用率的命令</p>
+<ul>
+<li><p><strong>top</strong></p>
+<ul>
+<li><p>使用权限：所有使用者</p>
+<p>使用方式：top [-] [d delay] [q] [c] [S] [s] [i] [n] [b]</p>
+<p>说明：即时显示process的动态</p>
+<p>d :改变显示的更新速度，或是在交谈式指令列( interactive command)按s</p>
+<p>q :没有任何延迟的显示速度，如果使用者是有superuser的权限，则top将会以最高的优先序执行</p>
+<p>c :切换显示模式，共有两种模式，一是只显示执行档的名称，另一种是显示完整的路径与名称S :累积模式，会将己完成或消失的子行程( dead child process )的CPU time累积起来</p>
+<p>s :安全模式，将交谈式指令取消,避免潜在的危机</p>
+<p>i :不显示任何闲置(idle)或无用(zombie)的行程</p>
+<p>n :更新的次数，完成后将会退出top</p>
+<p>b :批次档模式，搭配”n”参数一起使用，可以用来将top的结果输出到档案内</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>查看CPU运行在多少位下的命令</p>
+<ul>
+<li><strong>getconf LONG_BIT</strong></li>
+</ul>
+</li>
+<li><p>查看CPU是否支持64位运算</p>
+<ul>
+<li><strong>cat /proc/cpuinfo | grep flags | grep ‘ lm ‘|wc -l</strong></li>
+</ul>
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

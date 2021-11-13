@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="Linux系统启动时进入紧急模式，提示：Welcome to emergency mode，如图1所示，并提示输入root密码进入维护。
+图1 紧急模式
+根因分析紧急模式提供尽可能最小的环境，即使在,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>十一月 13, 2021</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>Linux系统启动时进入紧急模式，提示：Welcome to emergency mode，如<a target="_blank" rel="noopener" href="https://support.huaweicloud.com/trouble-ecs/ecs_trouble_0310.html#ecs_trouble_0310__fig1580004542818">图1</a>所示，并提示输入root密码进入维护。</p>
+<p>图1 紧急模式<br><img src="https://support.huaweicloud.com/trouble-ecs/zh-cn_image_0168407164.png" alt="点击放大"></p>
+<h4 id="根因分析"><a href="#根因分析" class="headerlink" title="根因分析"></a>根因分析</h4><p>紧急模式提供尽可能最小的环境，即使在系统无法进入救援模式的情况下，您也可以修复系统。在紧急模式下，系统仅安装根文件系统进行读取，不尝试安装任何其他本地文件系统，不激活网络接口，只启动一些基本服务。</p>
+<p>进入紧急模式的原因通常是：</p>
+<ul>
+<li>/etc/fstab文件存在错误导致挂载文件系统时失败。</li>
+<li>文件系统存在错误导致。</li>
+</ul>
+<h4 id="约束与限制"><a href="#约束与限制" class="headerlink" title="约束与限制"></a>约束与限制</h4><p>本节操作适用于Linux操作系统emergency mode（紧急模式）问题处理。操作步骤涉及修复文件系统操作，修复文件系统存在丢失数据风险，请先备份数据后进行修复操作。</p>
+<h4 id="处理方法"><a href="#处理方法" class="headerlink" title="处理方法"></a>处理方法</h4><ol>
+<li><p>输入root密码后回车，进入修复模式。</p>
+</li>
+<li><p>在紧急模式下根分区是以只读方式挂载，要修改根目录下的文件需要执行以下命令，以读写方式重新挂载根分区。</p>
+<p><strong># mount -o rw,remount /</strong></p>
+</li>
+<li><p>请执行以下命令首先检查fstab文件是否存在错误，尝试挂载所有未挂载的文件系统。</p>
+<p><strong># mount -a</strong></p>
+<ul>
+<li>如果出现mount point does not exist为挂载点不存在，请创建对应的挂载点。</li>
+<li>如果出现no such device为不存在该文件系统设备，请注释或者删除该挂载行。</li>
+<li>如果出现an incorrect mount option was specified为挂载参数错误，请修改为正确的参数。</li>
+<li>如果没有出现任何错误且提示UNEXPECTED INCONSISTENCY;RUN fsck MANUALLY，通常为文件系统错误导致，请跳至步骤<a target="_blank" rel="noopener" href="https://support.huaweicloud.com/trouble-ecs/ecs_trouble_0310.html#ecs_trouble_0310__li4113114004712">7</a>。</li>
+</ul>
+</li>
+<li><p>执行以下命令，打开/etc/fstab修改相应的错误。</p>
+<p><strong># vi /etc/fstab</strong></p>
+<p>/etc/fstab文件包含了如下字段，通过空格分隔：</p>
+<p>[file system] [dir] [type] [options] [dump] [fsck]</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[file systems]</td>
+<td>要挂载的分区或存储设备。[file system]列建议使用UUID的方式书写，执行<strong>blkid</strong>命令查询设备文件系统UUID。参考格式如下：# <device> <dir> <type> <options> <dump> <fsck>UUID=b411dc99-f0a0-4c87-9e05-184977be8539 /home ext4 defaults 0 2使用UUID的好处在于它们与磁盘顺序无关。如果你在BIOS中改变了你的存储设备顺序，或是重新拔插了存储设备，或是因为一些BIOS可能会随机地改变存储设备的顺序，那么用UUID来表示将更有效。</td>
+</tr>
+<tr>
+<td>[dir]</td>
+<td>[file systems]的挂载位置。</td>
+</tr>
+<tr>
+<td>[type]</td>
+<td>挂载设备或分区的文件系统类型，支持许多种不同的文件系统：ext2，ext3，ext4，reiserfs，xfs，jfs，smbfs，iso9660，vfat，ntfs，swap及auto。设置成auto类型，mount命令会猜测使用的文件系统类型，对CDROM和DVD等移动设备是非常有用的。</td>
+</tr>
+<tr>
+<td>[options]</td>
+<td>挂载时使用的参数，有些参数是特定文件系统才有的。例如：defaults参数使用文件系统的默认挂载参数，ext4的默认参数为:rw，suid，dev，exec，auto，nouser，async。更多参数请执行以下命令查看man手册：**# man mount**</td>
+</tr>
+<tr>
+<td>[dump]</td>
+<td>dump工具通过它决定何时作备份。 dump会检查其内容，并用数字来决定是否对这个文件系统进行备份。取值为0和1 。0表示忽略，1则进行备份。大部分的用户是没有安装dump的，[dump]应设为0。</td>
+</tr>
+<tr>
+<td>[fsck]</td>
+<td>fsck读取[fsck]的数值来决定需要检查的文件系统的检查顺序。取值为0，1，和2。 根目录应当获得最高的优先权1, 其它所有需要被检查的设备设置为2，0表示设备不会被fsck所检查。</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>修改完成后，确认修改是否正确，再次执行以下命令首先检查fstab文件。</p>
+<p><strong># mount -a</strong></p>
+</li>
+<li><p>执行以下命令，重启服务器。</p>
+<p><strong># reboot</strong></p>
+</li>
+<li><p>如果步骤</p>
+<p>3</p>
+<p>中没有任何错误，则可能为文件系统错误导致，执行：</p>
+<p><strong># dmesg |egrep “ext[2..4]|xfs” |grep -i error</strong></p>
+<p><img src="https://res-img3.huaweicloud.com/content/dam/cloudbu-site/archive/china/zh-cn/support/resource/framework/v3/images/support-doc-new-note.svg" alt="img">说明：</p>
+<ul>
+<li>输出结果中如果有I/O error … inode的错误信息则根因为文件系统错误导致。</li>
+<li>如果上述命令没有发现日志记录文件系统文件错误则通常为超级块损坏。超级块是文件系统的“头部”。它包含文件系统的状态、尺寸和空闲磁盘块等信息。</li>
+<li>如果损坏了一个文件系统的超级块（例如不小心直接将数据写到了文件系统的超级块分区中），那么系统可能会完全不识别该文件系统，系统启动时没有识别到文件系统导致进入紧急模式。ext2fs类型的文件系统将超级块的内容进行了备份，并存放于驱动程序的块组（blockgroup）边界。</li>
+</ul>
+</li>
+<li><p>请执行以下命令，卸载文件系统出错的目录，</p>
+<p><strong># umount *挂载点*</strong></p>
+</li>
+<li><p>检查并修复已损坏的文件系统。</p>
+<p><strong><img src="https://res-img2.huaweicloud.com/content/dam/cloudbu-site/archive/china/zh-cn/support/resource/framework/v3/images/support-doc-new-notice.svg" alt="img">须知：</strong></p>
+<p>修复文件系统可能会导致数据丢失请先进行数据备份。</p>
+<ul>
+<li><p>ext文件系统，执行以下命令，检查文件系统是否存在错误。</p>
+<p><strong># fsck -n /dev/vdb1</strong></p>
+<p><img src="https://res-img3.huaweicloud.com/content/dam/cloudbu-site/archive/china/zh-cn/support/resource/framework/v3/images/support-doc-new-note.svg" alt="img">说明：</p>
+<p>如果出现The super block Cloud no be read or does not describe a correct ext2 filesystem的提示请跳转至<a target="_blank" rel="noopener" href="https://support.huaweicloud.com/trouble-ecs/ecs_trouble_0310.html#ecs_trouble_0310__li6746165011490">10</a>。</p>
+<p>如果需要修复，执行以下命令，修复文件系统。</p>
+<p><strong># fsck /dev/vdb1</strong></p>
+</li>
+<li><p>xfs文件系统，执行以下命令，检查文件系统是否存在错误。</p>
+<p><strong># xfs_repair -n /dev/vdb1</strong></p>
+<p>如果需要修复，执行以下命令，修复文件系统。</p>
+<p><strong># xfs_repair /dev/vdb1</strong></p>
+</li>
+</ul>
+</li>
+<li><p>（可选）出现The super block Cloud no be read or does not describe a correct ext2 filesystem通常为超级块损坏，如</p>
+<p>图2</p>
+<p>所示，请按照提示使用备份的超级块更新超级块。</p>
+<p>图2 超级块损坏<br><img src="https://support.huaweicloud.com/trouble-ecs/zh-cn_image_0203262257.png" alt="点击放大"></p>
+<p>执行以下命令，使用备份的超级块信息更新超级块。</p>
+<p><strong># e2fsck -b 8193</strong> 设备名</p>
+<p>如<a target="_blank" rel="noopener" href="https://support.huaweicloud.com/trouble-ecs/ecs_trouble_0310.html#ecs_trouble_0310__fig161104484810">图3</a>所示更新超级块完成：</p>
+<p>图3 更新超级块<br><img src="https://support.huaweicloud.com/trouble-ecs/zh-cn_image_0203262258.png" alt="img"></p>
+<p><img src="https://res-img3.huaweicloud.com/content/dam/cloudbu-site/archive/china/zh-cn/support/resource/framework/v3/images/support-doc-new-note.svg" alt="img">说明：</p>
+<ul>
+<li><p>-b 8193选项用于显示使用存放在文件系统中的8193块的超级块的备份数据。通常在主超级块已损坏时使用。备份超级块的位置是依赖的在文件系统的blocksize上。</p>
+<p>对于具有1k块大小的文件系统，可以在块处找到备份超级块8193。</p>
+<p>对于具有2k块大小的文件系统，在块16384;对于4k块，在块32768。</p>
+</li>
+<li><p>&lt;设备名&gt;为磁盘名称而非分区。</p>
+</li>
+</ul>
+</li>
+<li><p>修复完成后执行以下命令，重启服务器。</p>
+<p><strong># reboot</strong></p>
+</li>
+</ol>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

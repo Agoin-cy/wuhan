@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="
+使用checkinstall将ko打包为deb
+
+下载chechinstall
+1sudo apt-get install checkinstall			
+切换至源码目录
+1cd /home/in,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>十一月 13, 2021</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <ul>
+<li><p>使用checkinstall将ko打包为deb</p>
+<ul>
+<li><p>下载chechinstall</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install checkinstall			</span><br></pre></td></tr></table></figure></li>
+<li><p>切换至源码目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /home/inno/caoy/kmd</span><br></pre></td></tr></table></figure></li>
+<li><p>根据平台修改环境变量</p>
+<p>主要修改 <code>RGX_BVNC</code> 和 <code>PVR_BUILD_DIR</code>两个环境变量</p>
+</li>
+<li><p>编译kmd代码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source env-ne-11.sh</span><br><span class="line">make -j16</span><br></pre></td></tr></table></figure></li>
+<li><p>生成deb包</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">checkinstall -D -y -install=no -default make insatll</span><br></pre></td></tr></table></figure></li>
+<li><p>检验deb包是否可用</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dpkg -i XXX.deb</span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$&#123;TARGET&#125;</span>/lib/modules/4.14.48/extra/</span><br><span class="line">insmod XXX.ko</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>查看不同平台的vermagic<ul>
+<li>NE11<ul>
+<li>root@inno-DEV:<del>/caoy/kmd/binary_a7evm_nulldrmws_debug/target_x86_64# modinfo a<br>Display all 389 possibilities? (y or n)<br>root@inno-DEV:</del>/caoy/kmd/binary_a7evm_nulldrmws_debug/target_x86_64# modinfo a7evm.ko<br>filename:       /root/caoy/kmd/binary_a7evm_nulldrmws_debug/target_x86_64/a7evm.ko<br>description:    Inno a7evm framework driver<br>license:        Dual MIT/GPL<br>author:         Imagination Technologies Ltd. <a href="mailto:&#x67;&#112;&#108;&#x2d;&#115;&#x75;&#x70;&#112;&#x6f;&#x72;&#x74;&#x40;&#105;&#x6d;&#103;&#116;&#101;&#x63;&#46;&#x63;&#x6f;&#x6d;">&#x67;&#112;&#108;&#x2d;&#115;&#x75;&#x70;&#112;&#x6f;&#x72;&#x74;&#x40;&#105;&#x6d;&#103;&#116;&#101;&#x63;&#46;&#x63;&#x6f;&#x6d;</a><br>srcversion:     533BB7E5866E52F63B9ACCB<br>alias:          pci:v00001EC8d00001EB8sv<em>sd</em>bc<em>sc</em>i*<br>alias:          pci:v000010EEd00008034sv<em>sd</em>bc<em>sc</em>i*<br>depends:<br>retpoline:      Y<br>name:           a7evm<br>vermagic:       4.14.48 SMP mod_unload modversions<br>parm:           tc_core_clock:TC core clock speed (int)<br>parm:           tc_mem_clock:TC memory clock speed (int)<br>parm:           tc_sys_clock:TC system clock speed (TCF5 only) (int)<br>parm:           tc_mem_latency:TC memory read latency in cycles (TCF5 only) (int)<br>parm:           tc_mem_mode:TC memory mode (local = 1, hybrid = 2, host = 3) (ulong)<br>parm:           tc_wresp_latency:TC memory write response latency in cycles (TCF5 only) (int)<br>parm:           inno_a7evm_mem_size:Inno a7evm buffer reserved memory size in bytes (ulong)<br>parm:           g_dual_codec:int</li>
+</ul>
+</li>
+<li>NE09<ul>
+<li>root@inno-DEV:~/caoy/kmd# modinfo ./binary_a7evm_nulldrmws_debug/target_x86_64/a7evm.ko<br>filename:       /root/caoy/kmd/./binary_a7evm_nulldrmws_debug/target_x86_64/a7evm.ko<br>description:    Inno a7evm framework driver<br>license:        Dual MIT/GPL<br>author:         Imagination Technologies Ltd. <a href="mailto:&#103;&#112;&#x6c;&#45;&#x73;&#117;&#x70;&#x70;&#x6f;&#x72;&#x74;&#64;&#x69;&#x6d;&#x67;&#116;&#101;&#x63;&#46;&#x63;&#x6f;&#x6d;">&#103;&#112;&#x6c;&#45;&#x73;&#117;&#x70;&#x70;&#x6f;&#x72;&#x74;&#64;&#x69;&#x6d;&#x67;&#116;&#101;&#x63;&#46;&#x63;&#x6f;&#x6d;</a><br>srcversion:     533BB7E5866E52F63B9ACCB<br>alias:          pci:v00001EC8d00001EB8sv<em>sd</em>bc<em>sc</em>i*<br>alias:          pci:v000010EEd00008034sv<em>sd</em>bc<em>sc</em>i*<br>depends:<br>retpoline:      Y<br>name:           a7evm<br>vermagic:       4.14.48 SMP mod_unload modversions<br>parm:           tc_core_clock:TC core clock speed (int)<br>parm:           tc_mem_clock:TC memory clock speed (int)<br>parm:           tc_sys_clock:TC system clock speed (TCF5 only) (int)<br>parm:           tc_mem_latency:TC memory read latency in cycles (TCF5 only) (int)<br>parm:           tc_mem_mode:TC memory mode (local = 1, hybrid = 2, host = 3) (ulong)<br>parm:           tc_wresp_latency:TC memory write response latency in cycles (TCF5 only) (int)<br>parm:           inno_a7evm_mem_size:Inno a7evm buffer reserved memory size in bytes (ulong)<br>parm:           g_dual_codec:int</li>
+</ul>
+</li>
+<li>TC<ul>
+<li>root@inno-DEV:~/caoy/kmd/binary_tc_linux_nulldrmws_debug/target_x86_64# modinfo tc.ko<br>filename:       /root/caoy/kmd/binary_tc_linux_nulldrmws_debug/target_x86_64/tc.ko<br>description:    PowerVR testchip framework driver<br>license:        Dual MIT/GPL<br>author:         Imagination Technologies Ltd. <a href="mailto:&#x67;&#112;&#108;&#x2d;&#x73;&#117;&#112;&#112;&#x6f;&#114;&#x74;&#64;&#x69;&#109;&#103;&#116;&#x65;&#99;&#x2e;&#x63;&#x6f;&#x6d;">&#x67;&#112;&#108;&#x2d;&#x73;&#117;&#112;&#112;&#x6f;&#114;&#x74;&#64;&#x69;&#109;&#103;&#116;&#x65;&#99;&#x2e;&#x63;&#x6f;&#x6d;</a><br>srcversion:     533BB7E5866E52F63B9ACCB<br>alias:          pci:v00001AEEd00001020sv<em>sd</em>bc<em>sc</em>i*<br>alias:          pci:v00001AEEd00001010sv<em>sd</em>bc<em>sc</em>i*<br>alias:          pci:v00001010d00001CF2sv<em>sd</em>bc<em>sc</em>i*<br>alias:          pci:v00001010d00001CF2sv<em>sd</em>bc<em>sc</em>i*<br>alias:          pci:v00001010d00001CF1sv<em>sd</em>bc<em>sc</em>i*<br>depends:<br>retpoline:      Y<br>name:           tc<br>vermagic:       4.14.48 SMP mod_unload<br>parm:           tc_core_clock:TC core clock speed (int)<br>parm:           tc_mem_clock:TC memory clock speed (int)<br>parm:           tc_sys_clock:TC system clock speed (TCF5 only) (int)<br>parm:           tc_mem_latency:TC memory read latency in cycles (TCF5 only) (int)<br>parm:           tc_mem_mode:TC memory mode (local = 1, hybrid = 2, host = 3) (ulong)<br>parm:           tc_wresp_latency:TC memory write response latency in cycles (TCF5 only) (int)<br>parm:           tc_pdp_mem_size:TC PDP reserved memory size in bytes (ulong)<br>parm:           fbc_bypass:Force bypass of PDP2 FBC decompression (bool)</li>
+</ul>
+</li>
+<li></li>
+</ul>
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>
